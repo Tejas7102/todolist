@@ -1,7 +1,10 @@
 import { User } from "../models/user.js"
 import bcrypt from 'bcrypt'
 import { sendCookie } from "../utils/features.js"
+import jwt from "jsonwebtoken"
 export const register = async(req,res,next)=>{
+    const {token} = req.cookies
+    if(!token){
     try {
         const {name,email,pasword} = req.body
     let user = await User.findOne({email:email})
@@ -16,9 +19,20 @@ export const register = async(req,res,next)=>{
     } catch (error) {
         next(new Error(error))
     }
+}
+else{
+    const decoded = jwt.verify(token,process.env.JWTTOKEN)
+    req.user = await User.findById(decoded)
+    return res.status(404).json({
+        success:false,
+        message:`You already logged in as ${req.user.name}`
+    })
+}
     
 }
 export const login = async (req,res,next)=>{
+    const {token} = req.cookies
+    if(!token){
     try {
         const {email,pasword} = req.body
     const user = await User.findOne({email:email}).select("+pasword")
@@ -35,7 +49,15 @@ export const login = async (req,res,next)=>{
     } catch (error) {
         next(new Error(error))
     }
-    
+}
+else{
+    const decoded = jwt.verify(token,process.env.JWTTOKEN)
+    req.user = await User.findById(decoded)
+    return res.status(404).json({
+        success:false,
+        message:`You already logged in as ${req.user.name}`
+    })
+}
 }
 export const getUserDetails = async(req,res,next)=>{
     try {
