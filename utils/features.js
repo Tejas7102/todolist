@@ -4,7 +4,8 @@ export const sendCookie = (res,user,message) => {
     res.status(201).cookie("token",token,{
         httpOnly:true,
         sameSite:process.env.NODE_ENV==="Development"?"lax":"none",
-        secure:process.env.NODE_ENV==="Development"?false:true
+        secure:process.env.NODE_ENV==="Development"?false:true,
+        credentials: true
     }).json({
         success:true,
         message:message
