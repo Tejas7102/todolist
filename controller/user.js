@@ -73,7 +73,10 @@ export const getUserDetails = async(req,res,next)=>{
 export const logout = async(req,res,next)=>{
     try {
         res.status(200).cookie("token","",{
-            expires: new Date(Date.now())
+            httpOnly:true,
+            expires: new Date(Date.now()),
+            sameSite:"none",
+            secure:true
         }).json({
             success:true,
             message:"Logged out successfully"
